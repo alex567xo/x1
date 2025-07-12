@@ -300,6 +300,90 @@
             border-width: 0;
         }
     </style>
+      <style>
+        /* 播放器容器样式 */
+        #musicPlayer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 500px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* 播放器悬停效果 */
+        #musicPlayer:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        /* 按钮样式 */
+        #musicPlayer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #musicPlayer button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #5a7df4, #9867d5);
+        }
+
+        /* 当前播放信息样式 */
+        #nowPlaying {
+            flex-grow: 1;
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            padding: 0 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 隐藏原生audio元素 */
+        #bgMusic {
+            display: none;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            #musicPlayer {
+                width: 90%;
+                padding: 12px 15px;
+                border-radius: 30px;
+            }
+            
+            #musicPlayer button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            #nowPlaying {
+                font-size: 12px;
+                padding: 0 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -446,9 +530,7 @@
         </div>
     </div>
 
-    <footer>
-        &copy; 2024 图片与视频展示网页
-    </footer>
+   
 
     <script>
         (function() {
@@ -613,50 +695,62 @@
             });
         })();
     </script>
+    <!-- 音乐播放器 -->
     <div id="musicPlayer">
-  <audio id="bgMusic"></audio>
-  <div>
-    <button onclick="togglePlay()">播放/暂停</button>
-    <button onclick="nextTrack()">下一首</button>
-    <span id="nowPlaying">当前播放: </span>
-  </div>
-</div>
+        <audio id="bgMusic"></audio>
+        <button onclick="togglePlay()">播放/暂停</button>
+        <span id="nowPlaying">当前播放: 准备播放...</span>
+        <button onclick="nextTrack()">下一首</button>
+    </div>
 
-<script>
-  const playlist = [
-    {title: "不谓侠", src: "/AI SHOW/buweixia.mp3"},
-    {title: "致你", src: "/AI SHOW/zhini.mp3"},
-    {title: "跳楼机", src: "/AI SHOW/tiaolouji.mp3"},
-    {title: "你啊你啊", src: "/AI SHOW/niania.mp3"}
-  ];
-  
-  let currentTrack = 0;
-  const audioPlayer = document.getElementById('bgMusic');
-  const nowPlaying = document.getElementById('nowPlaying');
-  
-  function playTrack(index) {
-    currentTrack = index;
-    audioPlayer.src = playlist[currentTrack].src;
-    audioPlayer.play();
-    nowPlaying.textContent = "当前播放: " + playlist[currentTrack].title;
-  }
-  
-  function togglePlay() {
-    if (audioPlayer.paused) {
-      audioPlayer.play();
-    } else {
-      audioPlayer.pause();
-    }
-  }
-  
-  function nextTrack() {
-    playTrack((currentTrack + 1) % playlist.length);
-  }
-  
-  audioPlayer.addEventListener('ended', nextTrack);
-  
-  // 开始播放第一首歌
-  playTrack(0);
-</script>
+    <script>
+        const playlist = [
+            {title: "不谓侠", src: "/AI SHOW/buweixia.mp3"},
+            {title: "致你", src: "/AI SHOW/zhini.mp3"},
+            {title: "跳楼机", src: "/AI SHOW/tiaolouji.mp3"},
+            {title: "你啊你啊", src: "/AI SHOW/niania.mp3"}
+        ];
+        
+        let currentTrack = 0;
+        const audioPlayer = document.getElementById('bgMusic');
+        const nowPlaying = document.getElementById('nowPlaying');
+        
+        function playTrack(index) {
+            currentTrack = index;
+            audioPlayer.src = playlist[currentTrack].src;
+            audioPlayer.play()
+                .then(() => {
+                    nowPlaying.textContent = "当前播放: " + playlist[currentTrack].title;
+                })
+                .catch(error => {
+                    nowPlaying.textContent = "点击播放按钮开始播放";
+                    console.log("自动播放被阻止:", error);
+                });
+        }
+        
+        function togglePlay() {
+            if (audioPlayer.paused) {
+                audioPlayer.play()
+                    .then(() => {
+                        nowPlaying.textContent = "当前播放: " + playlist[currentTrack].title;
+                    });
+            } else {
+                audioPlayer.pause();
+            }
+        }
+        
+        function nextTrack() {
+            playTrack((currentTrack + 1) % playlist.length);
+        }
+        
+        audioPlayer.addEventListener('ended', nextTrack);
+        
+        // 初始化但不自动播放（因为浏览器可能阻止自动播放）
+        audioPlayer.src = playlist[currentTrack].src;
+        nowPlaying.textContent = "点击播放按钮开始播放";
+    </script>
+     <footer>
+        &copy; 2024 图片与视频展示网页
+    </footer>
 </body>
 </html>
