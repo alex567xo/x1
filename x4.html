@@ -613,5 +613,50 @@
             });
         })();
     </script>
+    <div id="musicPlayer">
+  <audio id="bgMusic"></audio>
+  <div>
+    <button onclick="togglePlay()">播放/暂停</button>
+    <button onclick="nextTrack()">下一首</button>
+    <span id="nowPlaying">当前播放: </span>
+  </div>
+</div>
+
+<script>
+  const playlist = [
+    {title: "不谓侠", src: "/AI SHOW/buweixia.mp3"},
+    {title: "致你", src: "/AI SHOW/zhini.mp3"},
+    {title: "跳楼机", src: "/AI SHOW/tiaolouji.mp3"},
+    {title: "你啊你啊", src: "/AI SHOW/niania.mp3"}
+  ];
+  
+  let currentTrack = 0;
+  const audioPlayer = document.getElementById('bgMusic');
+  const nowPlaying = document.getElementById('nowPlaying');
+  
+  function playTrack(index) {
+    currentTrack = index;
+    audioPlayer.src = playlist[currentTrack].src;
+    audioPlayer.play();
+    nowPlaying.textContent = "当前播放: " + playlist[currentTrack].title;
+  }
+  
+  function togglePlay() {
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+    } else {
+      audioPlayer.pause();
+    }
+  }
+  
+  function nextTrack() {
+    playTrack((currentTrack + 1) % playlist.length);
+  }
+  
+  audioPlayer.addEventListener('ended', nextTrack);
+  
+  // 开始播放第一首歌
+  playTrack(0);
+</script>
 </body>
 </html>
