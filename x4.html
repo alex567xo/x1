@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI图片与视频展示">
+    <title>AI SHOW</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+        
+        :root {
+            --primary-color: #6e48aa;
+            --secondary-color: #9d50bb;
+            --accent-color: #4776e6;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --modal-bg: rgba(0, 0, 0, 0.95);
+            --transition-speed: 0.3s;
+            --easing: cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            text-align: center;
+            padding: 2rem 1.25rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.75rem, 5vw, 2.5rem);
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            letter-spacing: 0.05em;
+        }
+        
+        .container {
+            width: min(90%, 87.5rem);
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+            gap: 1.5rem;
+            padding: 1.25rem 0;
+            flex: 1;
+        }
+        
+        .item {
+            overflow: hidden;
+            border-radius: 0.9375rem;
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.15);
+            background-color: white;
+            transition: transform var(--transition-speed) var(--easing), 
+                        box-shadow var(--transition-speed) var(--easing);
+            position: relative;
+            cursor: pointer;
+            will-change: transform;
+        }
+        
+        .item:focus-within,
+        .item:hover {
+            transform: translateY(-0.3125rem);
+            box-shadow: 0 0.9375rem 1.875rem rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        .item-media {
+            width: 100%;
+            height: 15.625rem;
+            object-fit: cover;
+            display: block;
+            transition: transform var(--transition-speed) ease, 
+                        filter var(--transition-speed) ease;
+            background: #f0f0f0;
+            will-change: transform;
+        }
+        
+        .item:hover .item-media {
+            transform: scale(1.05);
+            filter: brightness(1.05);
+        }
+        
+        .item h3 {
+            margin: 0;
+            padding: 0.9375rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 600;
+            letter-spacing: 0.03125rem;
+            position: relative;
+        }
+        
+        .item h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2.5rem;
+            height: 0.1875rem;
+            background: white;
+            border-radius: 0.1875rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.25rem;
+            background: linear-gradient(to right, var(--dark-color), #16213e);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            overflow: auto;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+            touch-action: pan-y;
+        }
+        
+        .modal.show {
+            opacity: 1;
+        }
+        
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 1.25rem;
+        }
+        
+        .modal-media {
+            max-width: min(90%, 75rem);
+            max-height: 90vh;
+            object-fit: contain;
+            animation: zoomIn var(--transition-speed) ease;
+            will-change: transform;
+        }
+        
+        .close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.875rem;
+            color: white;
+            font-size: 2.1875rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .close:hover,
+        .close:focus {
+            transform: scale(1.2);
+            outline: none;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3.125rem;
+            height: 3.125rem;
+            border: 0.3125rem solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 1001;
+        }
+        
+        .modal.loading .spinner {
+            display: block;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(1.25rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .container {
+            animation: fadeIn 0.6s var(--easing) forwards;
+        }
+        
+        .item {
+            animation: fadeIn 0.6s var(--easing) forwards;
+        }
+        
+        .item:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+        
+        .item:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 48rem) {
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+                gap: 1rem;
+            }
+            
+            .item-media {
+                height: 12.5rem;
+            }
+        }
+        
+        @media (max-width: 30rem) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-media {
+                max-width: 95%;
+                max-height: 80vh;
+            }
+            
+            .close {
+                top: 0.625rem;
+                right: 0.625rem;
+            }
+        }
+        
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 0.0625rem;
+            height: 0.0625rem;
+            padding: 0;
+            margin: -0.0625rem;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI SHOW</h1>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- 图片展示 -->
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 1">
+                <img src="/AI SHOW/ai2.jpg" alt="AI图片 1" class="item-media" loading="lazy">
+                <h3>AI图片 1</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 2">
+                <img src="/AI SHOW/ai9.jpg" alt="AI图片 2" class="item-media" loading="lazy">
+                <h3>AI图片 2</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 3">
+                <img src="/AI SHOW/ai1.jpg" alt="AI图片 3" class="item-media" loading="lazy">
+                <h3>AI图片 3</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 4">
+                <img src="/AI SHOW/ai8.jpg" alt="AI图片 4" class="item-media" loading="lazy">
+                <h3>AI图片 4</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 5">
+                <img src="/AI SHOW/ai4.jpg" alt="AI图片 5" class="item-media" loading="lazy">
+                <h3>AI图片 5</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="查看AI图片 6">
+                <img src="/AI SHOW/ai7.jpg" alt="AI图片 6" class="item-media" loading="lazy">
+                <h3>AI图片 6</h3>
+            </div>
+
+            <!-- 视频展示 -->
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 1">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v6.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 1</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 2">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v2.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 2</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 3">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v1.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 3</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 4">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v4.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 4</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 5">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v3.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 5</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 6">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v5.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 6</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 7">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/ai v16.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 7</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 8">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V11.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 8</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 9">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V12.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 9</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 10">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V13.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 10</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 11">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V14.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 11</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 12">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V15.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 12</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 13">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V18.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 13</h3>
+            </div>
+            <div class="item" tabindex="0" role="button" aria-label="播放AI视频 14">
+                <video class="item-media" controls preload="metadata" playsinline>
+                    <source src="/AI SHOW/Ai V19.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+                <h3>AI视频 14</h3>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for enlarged view -->
+    <div id="mediaModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <span class="close" tabindex="0" aria-label="关闭">&times;</span>
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="modal-content">
+            <img id="modalImage" class="modal-media" style="display:none;" alt="">
+            <video id="modalVideo" class="modal-media" controls style="display:none;"></video>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 图片与视频展示网页
+    </footer>
+
+    <script>
+        (function() {
+            'use strict';
+            
+            // Cache DOM elements
+            const modal = document.getElementById('mediaModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalVideo = document.getElementById('modalVideo');
+            const closeBtn = document.querySelector('.close');
+            const spinner = document.querySelector('.spinner');
+            
+            // Initialize modal state
+            let currentMedia = null;
+            
+            // Show modal with media
+            function showModal(mediaElement) {
+                if (!mediaElement) return;
+                
+                currentMedia = mediaElement;
+                modal.classList.add('loading');
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                // Set aria-hidden attributes
+                document.querySelector('main').setAttribute('aria-hidden', 'true');
+                document.querySelector('footer').setAttribute('aria-hidden', 'true');
+                
+                setTimeout(() => {
+                    modal.classList.add('show');
+                    
+                    if (mediaElement.tagName === 'IMG') {
+                        modalImg.src = mediaElement.src;
+                        modalImg.alt = mediaElement.alt || '放大图片';
+                        modalImg.style.display = 'block';
+                        modalVideo.style.display = 'none';
+                    } else if (mediaElement.tagName === 'VIDEO') {
+                        modalVideo.innerHTML = '';
+                        const source = document.createElement('source');
+                        source.src = mediaElement.querySelector('source').src;
+                        source.type = 'video/mp4';
+                        modalVideo.appendChild(source);
+                        modalVideo.setAttribute('aria-label', mediaElement.parentElement.getAttribute('aria-label'));
+                        modalVideo.style.display = 'block';
+                        modalImg.style.display = 'none';
+                        
+                        // Copy controls state
+                        modalVideo.controls = mediaElement.controls;
+                        
+                        // Load video metadata
+                        modalVideo.load();
+                    }
+                    
+                    // Set focus to close button for keyboard navigation
+                    closeBtn.focus();
+                    
+                    // Hide spinner when media is loaded
+                    const mediaToLoad = modalImg.style.display === 'block' ? modalImg : modalVideo;
+                    mediaToLoad.onload = mediaToLoad.onloadeddata = function() {
+                        modal.classList.remove('loading');
+                        this.onload = this.onloadeddata = null;
+                    };
+                    
+                    // Fallback in case load event doesn't fire
+                    setTimeout(() => {
+                        modal.classList.remove('loading');
+                    }, 1000);
+                }, 10);
+            }
+            
+            // Close modal
+            function closeModal() {
+                modal.classList.remove('show');
+                
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.removeProperty('overflow');
+                    
+                    // Reset aria-hidden attributes
+                    document.querySelector('main').removeAttribute('aria-hidden');
+                    document.querySelector('footer').removeAttribute('aria-hidden');
+                    
+                    if (modalVideo.style.display === 'block') {
+                        modalVideo.pause();
+                    }
+                    
+                    // Return focus to the clicked element
+                    if (currentMedia) {
+                        currentMedia.focus();
+                        currentMedia = null;
+                    }
+                }, 300);
+            }
+            
+            // Event delegation for media items
+            document.querySelector('.container').addEventListener('click', function(e) {
+                const item = e.target.closest('.item');
+                if (!item) return;
+                
+                const media = item.querySelector('.item-media');
+                if (!media) return;
+                
+                // Prevent triggering when clicking on video controls
+                if (media.tagName === 'VIDEO' && media.controls) {
+                    const rect = media.getBoundingClientRect();
+                    const isControlClick = e.clientY > rect.top + rect.height - 50;
+                    if (isControlClick) return;
+                }
+                
+                showModal(media);
+            });
+            
+            // Keyboard support for items
+            document.querySelectorAll('.item').forEach(item => {
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const media = this.querySelector('.item-media');
+                        if (media) showModal(media);
+                    }
+                });
+            });
+            
+            // Close modal events
+            closeBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    closeModal();
+                }
+            });
+            
+            // Close when clicking outside the media
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Close with ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+            
+            // Preload first few images for better UX
+            function preloadImages() {
+                const images = document.querySelectorAll('.item-media[src^="/AI SHOW/ai"]');
+                const preloadCount = Math.min(3, images.length);
+                
+                for (let i = 0; i < preloadCount; i++) {
+                    const img = new Image();
+                    img.src = images[i].src;
+                }
+            }
+            
+            // Initialize
+            document.addEventListener('DOMContentLoaded', preloadImages);
+            window.addEventListener('load', function() {
+                document.body.classList.add('loaded');
+            });
+        })();
+    </script>
+</body>
+</html>
