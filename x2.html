@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI SHOW</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+        
+        :root {
+            --primary-color: #6e48aa;
+            --secondary-color: #9d50bb;
+            --accent-color: #4776e6;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            letter-spacing: 1px;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .item {
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background-color: white;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+        
+        .item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease, filter 0.3s ease;
+        }
+        
+        .item:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.05);
+        }
+        
+        .item video {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            border: none;
+            transition: transform 0.5s ease;
+        }
+        
+        .item:hover video {
+            transform: scale(1.02);
+        }
+        
+        .item h3 {
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        
+        .item h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, var(--dark-color), #16213e);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        /* 添加一些动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .item:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+        
+        .item:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>AI SHOW</h1>
+    </header>
+
+    <div class="container">
+        <!-- 图片展示 -->
+        <div class="item">
+            <img src="/AI SHOW/ai2.jpg" alt="示例图片">
+            <h3>AI图片 1</h3>
+        </div>
+        <div class="item">
+            <img src="/AI SHOW/ai9.jpg" alt="示例图片">
+            <h3>AI图片 2</h3>
+        </div>
+         <div class="item">
+            <img src="/AI SHOW/ai1.jpg" alt="示例图片">
+            <h3>AI图片 3</h3>
+        </div>
+        <div class="item">
+            <img src="/AI SHOW/ai8.jpg" alt="示例图片">
+            <h3>AI图片 4</h3>
+        </div>
+        <div class="item">
+            <img src="/AI SHOW/ai4.jpg" alt="示例图片">
+            <h3>AI图片 5</h3>
+        </div>
+        <div class="item">
+            <img src="/AI SHOW/ai7.jpg" alt="示例图片">
+            <h3>AI图片 6</h3>
+        </div>
+
+        <!-- 视频展示 -->
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v6.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 1</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v2.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 2</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v1.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 3</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v4.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 4</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v3.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 5</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v5.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 6</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/ai v16.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 7</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V11.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 8</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V12.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 9</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V13.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 10</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V14.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 11</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V15.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 12</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V18.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 13</h3>
+        </div>
+        <div class="item">
+            <video controls>
+                <source src="/AI SHOW/Ai V19.mp4" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
+            <h3>AI视频 14</h3>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 图片与视频展示网页
+    </footer>
+
+</body>
+</html>
