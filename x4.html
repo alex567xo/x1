@@ -764,6 +764,44 @@
         audioPlayer.src = playlist[currentTrack].src;
         nowPlaying.textContent = "点击播放按钮开始播放";
     </script>
+    <a href="https://a.alexszn.dpdns.org/" class="btn-shadow">心</a>
+
+<style>
+.btn-shadow {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #ff4757;
+    color: white;
+    text-decoration: none;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+}
+
+.btn-shadow:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: -1;
+}
+
+.btn-shadow:hover {
+    transform: translateY(-5px);
+}
+
+.btn-shadow:hover:before {
+    transform: translateY(5px) scale(0.9);
+    opacity: 0;
+}
+</style>
      <footer>
         &copy; 2024 图片与视频展示网页
     </footer>
