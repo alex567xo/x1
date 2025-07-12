@@ -26,10 +26,7 @@
         }
         
         body {
-              background-image: url('/AI SHOW/hailang.gif');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+        
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: var(--dark-color);
@@ -38,6 +35,18 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+         .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/AI SHOW/hailang.gif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -1;
         }
         
         header {
@@ -391,7 +400,7 @@
 
 </head>
 <body>
-    
+    <div class="background"></div>
     <header>
         <h1>AI SHOW</h1>
     </header>
