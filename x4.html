@@ -387,7 +387,8 @@
 
 </head>
 <body>
-    
+    <canvas id="ripple"></canvas>
+    <div class="content">
     <header>
         <h1>AI SHOW</h1>
     </header>
@@ -754,6 +755,85 @@
      <footer>
         &copy; 2024 图片与视频展示网页
     </footer>
-          
+          </div>
+
+    <script>
+        const canvas = document.getElementById('ripple');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const drops = [];
+        const colors = ['#ff3366', '#20a4f3', '#2ec4b6', '#f6f7f8'];
+        
+        // 创建初始水滴
+        function createDrop(x, y) {
+            drops.push({
+                x: x,
+                y: y,
+                radius: 5,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speed: Math.random() * 2 + 1,
+                life: 100
+            });
+        }
+        
+        // 绘制水滴
+        function drawDrops() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < drops.length; i++) {
+                const drop = drops[i];
+                
+                ctx.beginPath();
+                ctx.arc(drop.x, drop.y, drop.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = drop.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 更新水滴
+                drop.radius += drop.speed;
+                drop.life--;
+                
+                // 移除消失的水滴
+                if (drop.life <= 0) {
+                    drops.splice(i, 1);
+                    i--;
+                }
+            }
+            
+            // 随机创建新水滴
+            if (Math.random() < 0.03) {
+                createDrop(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height
+                );
+            }
+            
+            requestAnimationFrame(drawDrops);
+        }
+        
+        // 点击创建水滴
+        canvas.addEventListener('click', function(e) {
+            createDrop(e.clientX, e.clientY);
+        });
+        
+        // 窗口大小调整
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 创建初始水滴
+        for (let i = 0; i < 5; i++) {
+            createDrop(
+                Math.random() * canvas.width,
+                Math.random() * canvas.height
+            );
+        }
+        
+        drawDrops();
+    </script> 
 </body>
 </html>
